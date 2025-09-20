@@ -1,23 +1,21 @@
 "use client";
 import React from "react";
 import { Box, Button, HStack, Spacer, Text } from "@chakra-ui/react";
-import { useAuthContext } from "@/providers/AuthProvider";
-import { signOutUser } from "@/lib/firebase/auth";
+import { useAuth } from "@/hooks/useAuth";
+import { ROUTES } from "@/constants/routes";
+import ProfileDropdown from "@/components/ProfileDropdown";
 import Link from "next/link";
 
 export default function NavBar() {
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   return (
     <HStack as={Box} px={4} py={3} borderBottomWidth="1px">
-      <Text as={Link} href="/" fontWeight="bold">Invoice App</Text>
+      <Text as={Link} href={ROUTES.HOME} fontWeight="bold">Invoice App</Text>
       <Spacer />
       {user ? (
-        <HStack>
-          <Text fontSize="sm" color="gray.600">{user.email}</Text>
-          <Button size="sm" onClick={signOutUser} variant="outline">Sign out</Button>
-        </HStack>
+        <ProfileDropdown />
       ) : (
-        <Button as={Link} href="/login" size="sm" colorScheme="teal">Login</Button>
+        <Button as={Link} href={ROUTES.LOGIN} size="sm" colorScheme="teal">Login</Button>
       )}
     </HStack>
   );

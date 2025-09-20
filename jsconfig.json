@@ -7,7 +7,9 @@
       "@/hooks/*": ["hooks/*"],
       "@/lib/*": ["lib/*"],
       "@/utils/*": ["utils/*"],
-      "@/providers/*": ["providers/*"]
+      "@/providers/*": ["providers/*"],
+      "@/store/*": ["store/*"],
+      "@/constants/*": ["constants/*"]
     }
   }
 }

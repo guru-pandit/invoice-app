@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { atLeastMessage, invalidMessage, requiredMessage } from "enums/messages";
+import { atLeastMessage, invalidMessage, requiredMessage } from "@/constants/messages";
 import { PASSWORD_REGEX } from "./regex";
 
 export const emailValidation = Yup.string()

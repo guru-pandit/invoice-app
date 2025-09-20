@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { listenInvoices, createInvoice, updateInvoice, deleteInvoice, getInvoice } from "@/lib/firebase/invoices";
-import { useAuthContext } from "@/providers/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function useInvoices() {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuthContext();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;

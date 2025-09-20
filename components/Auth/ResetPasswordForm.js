@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Stack, Text, HStack, Link as CLink, FormControl, FormLabel, Input, FormErrorMessage } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { resetPasswordInitialValues } from "enums/initialvalues";
+import { resetPasswordInitialValues } from "@/constants/initialvalues";
 import { resetPasswordSchema } from "validations/auth-validation";
 
 export function ResetPasswordForm({ onSubmit, loading, onSwitchToSignIn }) {

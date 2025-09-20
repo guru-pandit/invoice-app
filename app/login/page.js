@@ -1,20 +1,21 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Container, Heading, Stack } from "@chakra-ui/react";
-import { useAuthContext } from "@/providers/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { SignInForm, RegisterForm, ResetPasswordForm } from "@/components/Auth";
 import { useAuthorization } from "@/hooks/auth";
+import { ROUTES, getDefaultProtectedRoute } from "@/constants/routes";
 
 export default function LoginPage() {
   const [mode, setMode] = useState("signin"); // signin | register
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   const router = useRouter();
   const { handleSignIn, handleRegister, handleReset, loading } = useAuthorization();
 
   useEffect(() => {
     if (user) {
-      router.replace("/invoices");
+      router.replace(getDefaultProtectedRoute());
     }
   }, [user, router]);
 
@@ -22,14 +23,14 @@ export default function LoginPage() {
   const onSignIn = async (values, actions) => {
     const result = await handleSignIn(values, actions.setSubmitting);
     if (result.success) {
-      router.replace("/invoices");
+      router.replace(getDefaultProtectedRoute());
     }
   };
 
   const onRegister = async (values, actions) => {
     const result = await handleRegister(values, actions.setSubmitting);
     if (result.success) {
-      router.replace("/invoices");
+      router.replace(getDefaultProtectedRoute());
     }
   };
 

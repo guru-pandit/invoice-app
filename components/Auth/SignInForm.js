@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Stack, Text, HStack, Link as CLink, FormControl, FormLabel, Input, FormErrorMessage } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { loginInitialValues } from "enums/initialvalues";
+import { loginInitialValues } from "@/constants/initialvalues";
 import { signInSchema } from "validations/auth-validation";
 
 export function SignInForm({ onSubmit, loading, onSwitchToRegister, onSwitchToReset }) {

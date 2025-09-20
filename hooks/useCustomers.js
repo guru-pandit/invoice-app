@@ -1,10 +1,10 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { listenCustomers, createCustomer, updateCustomer, deleteCustomer, getCustomer } from "@/lib/firebase/customers";
-import { useAuthContext } from "@/providers/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function useCustomers() {
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
 
