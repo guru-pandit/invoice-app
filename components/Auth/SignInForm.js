@@ -1,6 +1,7 @@
 import React from "react";
-import { Button, Stack, Text, HStack, Link as CLink, FormControl, FormLabel, Input, FormErrorMessage } from "@chakra-ui/react";
+import { Button, Stack, Text, HStack, Link as CLink } from "@chakra-ui/react";
 import { useFormik } from "formik";
+import { InputField } from "@/components/FormFields";
 import { loginInitialValues } from "@/constants/initialvalues";
 import { signInSchema } from "validations/auth-validation";
 
@@ -13,39 +14,31 @@ export function SignInForm({ onSubmit, loading, onSwitchToRegister, onSwitchToRe
         }
     });
 
-    return (
-        <form onSubmit={formik.handleSubmit}>
-            <Stack spacing={4}>
-                <FormControl isInvalid={formik.errors.email && formik.touched.email}>
-                    <FormLabel>Email</FormLabel>
-                    <Input
-                        name="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        value={formik.values.email}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
-                </FormControl>
+    const { values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting } = formik;
 
-                <FormControl isInvalid={formik.errors.password && formik.touched.password}>
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                        name="password"
-                        type="password"
-                        placeholder="••••••••"
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
-                </FormControl>
+    return (
+        <form onSubmit={handleSubmit}>
+            <Stack spacing={4}>
+                <InputField
+                    field={{ name: "email", value: values.email, onChange: handleChange, onBlur: handleBlur }}
+                    form={{ errors, touched }}
+                    label="Email"
+                    type="email"
+                    placeholder="you@example.com"
+                />
+
+                <InputField
+                    field={{ name: "password", value: values.password, onChange: handleChange, onBlur: handleBlur }}
+                    form={{ errors, touched }}
+                    label="Password"
+                    type="password"
+                    placeholder="••••••••"
+                />
 
                 <Button
                     type="submit"
                     colorScheme="teal"
-                    isLoading={loading || formik.isSubmitting}
+                    isLoading={loading || isSubmitting}
                     loadingText="Signing in..."
                 >
                     Sign in
