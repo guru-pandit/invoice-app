@@ -2,6 +2,7 @@
 export * from './routes';
 export * from './initialvalues';
 export * from './messages';
+export * from './invoices';
 
 // You can add more constant exports here as your app grows
 // export * from './api';

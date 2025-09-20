@@ -10,7 +10,6 @@ export default function HomePage() {
         <Text>Manage invoices: create, save, filter, print, and export.</Text>
         <Stack direction={{ base: "column", sm: "row" }} spacing={4}>
           <Button as={Link} href="/invoices" colorScheme="teal">Invoices</Button>
-          <Button as={Link} href="/invoices/new" variant="outline">Create Invoice</Button>
         </Stack>
       </Stack>
     </Container>
