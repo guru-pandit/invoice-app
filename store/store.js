@@ -1,11 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
-// import invoicesReducer from './slices/invoicesSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    // invoices: invoicesReducer, // Uncomment to add invoices to global state
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
