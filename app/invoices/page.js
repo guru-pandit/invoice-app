@@ -15,6 +15,13 @@ export default function InvoicesPage() {
   const { showSuccess, showError } = useToastMessages();
   const newModal = useDisclosure();
 
+  // Add filters state
+  const [filters, setFilters] = useState({
+    customer: "",
+    dateFrom: "",
+    dateTo: ""
+  });
+
   const handleCreate = async (payload) => {
     try {
       const id = await add(payload);
@@ -38,6 +45,8 @@ export default function InvoicesPage() {
           loading={loading}
           onDelete={remove}
           customers={customers}
+          filters={filters}
+          setFilters={setFilters}
           onRowClick={(row) => router.push(`/invoices/${row.id}`)}
           showActions={true}
         />
