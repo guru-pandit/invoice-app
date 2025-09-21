@@ -3,6 +3,8 @@ import React from "react";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FormControl, FormLabel, Input, HStack } from "@chakra-ui/react";
+import moment from "moment";
+import { normalizeToDate } from "@/utils/format";
 
 // A reusable date-time picker that integrates with Formik or plain state
 // Props:
@@ -13,16 +15,7 @@ import { FormControl, FormLabel, Input, HStack } from "@chakra-ui/react";
 // - showTimeSelect: boolean
 // - dateFormat: string (e.g., "yyyy-MM-dd HH:mm")
 // - id, name: optional
-export default function DatePicker({
-  label,
-  selected,
-  onChange,
-  placeholder = "Select date & time",
-  showTimeSelect = true,
-  dateFormat = "yyyy-MM-dd HH:mm",
-  id,
-  name,
-}) {
+export default function DatePicker({ label, selected, onChange, placeholder = "Select date & time", showTimeSelect = true, dateFormat = "yyyy-MM-dd HH:mm", id, name }) {
   const value = normalizeToDate(selected);
 
   return (
@@ -43,15 +36,4 @@ export default function DatePicker({
       </HStack>
     </FormControl>
   );
-}
-
-function normalizeToDate(v) {
-  if (!v) return null;
-  if (v instanceof Date) return v;
-  if (typeof v === "string" || typeof v === "number") {
-    const d = new Date(v);
-    return isNaN(d.getTime()) ? null : d;
-  }
-  if (v?.toDate) return v.toDate();
-  return null;
 }

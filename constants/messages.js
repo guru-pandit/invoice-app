@@ -1,5 +1,9 @@
 import { uppercaseFirstLetter } from "@/utils/helpers";
 
+export const invoice = {
+    CREATED: 'Invoice sucessfully created!'
+}
+
 export function invalidMessage(field) {
     return field ? `Invalid ${field}` : 'Invalid'
 }

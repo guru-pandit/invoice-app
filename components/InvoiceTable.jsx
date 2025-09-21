@@ -1,94 +1,71 @@
 "use client";
-import React, { useMemo, useRef } from "react";
-import {
-  Box,
-  Button,
-  HStack,
-  IconButton,
-  Input,
-  Select,
-  Spinner,
-  Stack,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, flexRender, createColumnHelper } from "@tanstack/react-table";
-import { formatCurrency, formatDate } from "@/utils/format";
+import React, { useMemo } from "react";
+import { Box, HStack, Spinner, Stack, Text } from "@chakra-ui/react";
+import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { exportInvoicesToExcel } from "@/utils/exportExcel";
-import { DeleteIcon, DownloadIcon } from "@chakra-ui/icons";
-
-const columnHelper = createColumnHelper();
+import { useToastMessages } from "@/hooks/popup";
+import { invoiceTableColumns } from "@/components/InvoiceTable/columns";
+import FilterControls from "./InvoiceTable/FilterControls";
 
 export default function InvoiceTable({ invoices, loading, onDelete, customers, filters, setFilters, onRowClick }) {
-  const toast = useToast();
+    const { showError } = useToastMessages();
 
-  const columns = useMemo(() => [
-    columnHelper.accessor("number", { header: "Number", cell: (info) => info.getValue() || "-" }),
-    columnHelper.accessor("customerName", { header: "Customer", cell: (info) => info.getValue() || "-" }),
-    columnHelper.accessor("createdAt", { header: "Created At", cell: (info) => formatDate(info.row.original.createdAt) }),
-    columnHelper.accessor("dueDate", { header: "Due Date", cell: (info) => formatDate(info.row.original.dueDate) }),
-    columnHelper.accessor("total", { header: "Total", cell: (info) => formatCurrency(info.getValue()) }),
-    columnHelper.display({
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => (
-        <HStack>
-          <IconButton aria-label="Delete" colorScheme="red" size="sm" icon={<DeleteIcon />} onClick={(e) => { e.stopPropagation(); onDelete && onDelete(row.original.id); }} />
-        </HStack>
-      )
+  // Ensure filters has default values to prevent undefined errors
+  const safeFilters = {
+    customer: "",
+    dateFrom: "",
+    dateTo: "",
+    ...filters
+  };
+
+  const columns = useMemo(() => (
+    invoiceTableColumns({
+      onEdit: (row) => {
+        if (onRowClick) onRowClick(row);
+      },
+      onDelete: (row) => {
+        if (onDelete) onDelete(row.id);
+      }
     })
-  ], [onDelete]);
+  ), [onDelete, onRowClick]);
 
   const table = useReactTable({
     data: invoices || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    state: {},
   });
 
   const applyExport = () => {
     try {
       exportInvoicesToExcel(filteredData());
     } catch (e) {
-      toast({ status: "error", title: "Export failed", description: e.message });
+      showError(e.message);
     }
   };
 
   const filteredData = () => {
     let rows = invoices || [];
-    if (filters.customer) rows = rows.filter((r) => r.customerName === filters.customer);
-    if (filters.dateFrom) rows = rows.filter((r) => {
+    if (safeFilters.customer) rows = rows.filter((r) => r.customerName === safeFilters.customer);
+    if (safeFilters.dateFrom) rows = rows.filter((r) => {
       const d = r.createdAt?.toDate ? r.createdAt.toDate() : new Date(r.createdAt);
-      return d >= new Date(filters.dateFrom);
+      return d >= new Date(safeFilters.dateFrom);
     });
-    if (filters.dateTo) rows = rows.filter((r) => {
+    if (safeFilters.dateTo) rows = rows.filter((r) => {
       const d = r.createdAt?.toDate ? r.createdAt.toDate() : new Date(r.createdAt);
-      return d <= new Date(filters.dateTo);
+      return d <= new Date(safeFilters.dateTo);
     });
     return rows;
   };
 
   return (
     <Stack spacing={4}>
-      <HStack wrap="wrap" spacing={3}>
-        <Select placeholder="Filter by customer" value={filters.customer} onChange={(e) => setFilters((f) => ({ ...f, customer: e.target.value }))} maxW="250px">
-          {customers.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </Select>
-        <HStack>
-          <Text>From</Text>
-          <Input type="datetime-local" value={filters.dateFrom} onChange={(e) => setFilters((f) => ({ ...f, dateFrom: e.target.value }))} />
-        </HStack>
-        <HStack>
-          <Text>To</Text>
-          <Input type="datetime-local" value={filters.dateTo} onChange={(e) => setFilters((f) => ({ ...f, dateTo: e.target.value }))} />
-        </HStack>
-        <Button variant="outline" onClick={() => setFilters({ customer: "", dateFrom: "", dateTo: "" })}>Clear</Button>
-        <Button leftIcon={<DownloadIcon />} onClick={applyExport}>Export Excel</Button>
-      </HStack>
+      <FilterControls
+        filters={safeFilters}
+        setFilters={setFilters}
+        customers={customers}
+        onExport={applyExport}
+        onClear={() => setFilters({ customer: "", dateFrom: "", dateTo: "" })}
+      />
 
       <Box borderWidth="1px" borderRadius="md" overflowX="auto">
         {loading ? (
@@ -107,16 +84,13 @@ export default function InvoiceTable({ invoices, loading, onDelete, customers, f
               ))}
             </thead>
             <tbody>
-              {filteredData().map((row, idx) => (
-                <tr key={row.id || idx} style={{ cursor: onRowClick ? "pointer" : "default" }} onClick={() => onRowClick && onRowClick(row)}>
-                  <td style={{ padding: "8px", borderBottom: "1px solid #f3f3f3" }}>{row.number || "-"}</td>
-                  <td style={{ padding: "8px", borderBottom: "1px solid #f3f3f3" }}>{row.customerName || "-"}</td>
-                  <td style={{ padding: "8px", borderBottom: "1px solid #f3f3f3" }}>{formatDate(row.createdAt)}</td>
-                  <td style={{ padding: "8px", borderBottom: "1px solid #f3f3f3" }}>{formatDate(row.dueDate)}</td>
-                  <td style={{ padding: "8px", borderBottom: "1px solid #f3f3f3" }}>{formatCurrency(row.total)}</td>
-                  <td style={{ padding: "8px", borderBottom: "1px solid #f3f3f3" }}>
-                    <IconButton aria-label="Delete" colorScheme="red" size="sm" icon={<DeleteIcon />} onClick={(e) => { e.stopPropagation(); onDelete && onDelete(row.id); }} />
-                  </td>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} style={{ cursor: onRowClick ? "pointer" : "default" }} onClick={() => onRowClick && onRowClick(row.original)}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} style={{ padding: "8px", borderBottom: "1px solid #f3f3f3" }}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>

@@ -1,27 +1,28 @@
 "use client";
-import React, { useMemo, useState } from "react";
-import { Box, Button, Container, Heading, HStack, Stack, useDisclosure, useToast } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, Button, Container, Heading, HStack, Stack, useDisclosure } from "@chakra-ui/react";
 import useInvoices from "@/hooks/useInvoices";
 import InvoiceTable from "@/components/InvoiceTable";
 import ModalWrapper from "@/components/ModalWrapper";
 import InvoiceForm from "@/components/InvoiceForm";
 import { useRouter } from "next/navigation";
+import { useToastMessages } from "@/hooks/popup";
+import { invoice } from "@/constants/messages";
 
 export default function InvoicesPage() {
   const { invoices, loading, remove, customers, add } = useInvoices();
-  const [filters, setFilters] = useState({ customer: "", dateFrom: "", dateTo: "" });
   const router = useRouter();
-  const toast = useToast();
+  const { showSuccess, showError } = useToastMessages();
   const newModal = useDisclosure();
 
   const handleCreate = async (payload) => {
     try {
       const id = await add(payload);
-      toast({ status: "success", title: "Invoice created" });
+      showSuccess(invoice.CREATED);
       newModal.onClose();
       router.push(`/invoices/${id}`);
     } catch (e) {
-      toast({ status: "error", title: "Failed to create", description: e.message });
+      showError(e.message);
     }
   };
 
@@ -37,9 +38,8 @@ export default function InvoicesPage() {
           loading={loading}
           onDelete={remove}
           customers={customers}
-          filters={filters}
-          setFilters={setFilters}
           onRowClick={(row) => router.push(`/invoices/${row.id}`)}
+          showActions={true}
         />
 
         <ModalWrapper title="Create Invoice" isOpen={newModal.isOpen} onClose={newModal.onClose} size="5xl">
