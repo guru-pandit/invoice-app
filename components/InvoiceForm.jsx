@@ -12,10 +12,13 @@ import { InputField, SelectField, TextareaField, NumberInputFieldComponent, Date
 import { invoiceSchema } from "validations/invoice-validation";
 import { invoiceInitialValues } from "@/constants/initialvalues";
 import { INVOICE_STATUS, INVOICE_STATUS_LABELS } from "@/constants/invoices";
+import { useToastMessages } from "@/hooks/popup";
+import { customer } from "../constants";
 
 export default function InvoiceForm({ initialValues, onSubmit, submitLabel = "Save Invoice" }) {
   const { customers, add: addCustomer } = useCustomers();
   const custModal = useDisclosure();
+  const { showError, showSuccess } = useToastMessages();
   const toast = useToast();
 
   const formik = useFormik({
@@ -53,9 +56,10 @@ export default function InvoiceForm({ initialValues, onSubmit, submitLabel = "Sa
       setFieldValue("customerName", customerData.name || "");
       setFieldValue("customerEmail", customerData.email || "");
       custModal.onClose();
-      toast({ status: "success", title: "Customer created" });
+      showSuccess(customer.CREATED);
     } catch (e) {
-      // Error is handled in CustomerForm toast
+      console.error(e);
+      showError(e.message);
     }
   };
 

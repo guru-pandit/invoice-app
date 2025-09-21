@@ -4,6 +4,10 @@ export const invoice = {
     CREATED: 'Invoice sucessfully created!'
 }
 
+export const customer = {
+    CREATED: 'Customer sucessfully created!'
+}
+
 export function invalidMessage(field) {
     return field ? `Invalid ${field}` : 'Invalid'
 }
